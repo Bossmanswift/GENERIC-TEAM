@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.generic.model.Shipment;
 import com.generic.model.Warehouse;
+
 /**
  * This class will be responsible for tracking
  * a collection of warehouses and the shipments
@@ -14,24 +15,25 @@ import com.generic.model.Warehouse;
  * adding shipment, printing warehouse details,
  * enabling and disabled the freight receipt of a warehouse.
  * 
- * @author Seyi Ola
+ * @author GENERIC TEAM
  *
  */
-public class WarehouseTracker {
+public final class WarehouseTracker {
+	private static WarehouseTracker warehouseTracker;
 	
+	// Stores a collection of warehouses mapped by their id 
+	private Map<Integer, Warehouse> warehouses;
+
+	// private constructor
+	private WarehouseTracker() {}
 	
-	private static WarehouseTracker warehouseTracker = new WarehouseTracker();
-	private Map<Integer, Warehouse> warehouses; // Stores a collection of warehouses
-											    // mapped by their id 
-	
-	private WarehouseTracker()
-	{
-		// Store the warehouse
-		warehouses = new HashMap<>();	
-	}
-	
-	public static WarehouseTracker getInstance()
-	{
+	public static WarehouseTracker getInstance() {
+		if (warehouseTracker == null) {
+			synchronized(WarehouseTracker.class) {
+				warehouseTracker = new WarehouseTracker();
+				warehouseTracker.warehouses = new HashMap<>();
+			}
+		}
 		return warehouseTracker;
 	}
 	
@@ -40,31 +42,41 @@ public class WarehouseTracker {
 	 * Adds a new warehouse to the warehouse collection.
 	 * If the warehouse already exists, we return false.
 	 * @param  mWarehouse warehouse to add.
-	 * @return true if add was successful,
-	 * 		   false if add wasn't.
+	 * @return true if add successful, false if not
 	 */
-	public boolean addWarehouse(Warehouse mWarehouse) 
-	{
-		boolean added = false;
-		if(warehouses.get(mWarehouse.getWarehouseID()) == null)
-		{
+	public boolean addWarehouse(Warehouse mWarehouse) {
+		if(warehouses.get(mWarehouse.getWarehouseID()) == null) {
 			warehouses.put(mWarehouse.getWarehouseID(), mWarehouse);
-			added = true;
+			return true;
 		}
-		return added;
+		return false;
 	}
 	
-	
-	public boolean addShipment(int warehouseID, Shipment mShipment)
-	{
+	/**
+	 * Adds a shipment
+	 * @param warehouseID warehouseID
+	 * @param mShipment the shipment
+	 * @return true if add successful, false if not
+	 */
+	public boolean addShipment(int warehouseID, Shipment mShipment) {
 		Warehouse theWarehouse = warehouses.get(warehouseID);
-		
-		boolean add = (theWarehouse != null && theWarehouse.receivingFreight());
-		if (add) {theWarehouse.addShipment(mShipment);}
-		
-		return add;
+		if (theWarehouse != null && theWarehouse.receivingFreight()) {
+			theWarehouse.addShipment(mShipment);
+			return true;
+		}
+		return false;
 	}
 	
+	/**
+	 * Adds a shipment
+	 * @param theWarehouse warehouse to add 
+	 * 		  the shipment to
+	 * @param mShipment shipment to add to warehouse.
+	 * @return true if add successful, false if not. 
+	 */
+	public boolean addShipment(Warehouse theWarehouse, Shipment mShipment) {
+		return addShipment(theWarehouse.getWarehouseID(), mShipment);
+	}
 	
 	/**
 	 * Enables a freight receipt in 
@@ -73,97 +85,88 @@ public class WarehouseTracker {
 	 * @return true if freight was successfully
 	 *         enabled, false if not.
 	 */
-	
-	 public boolean enableFreight(int warehouseID)
-	 {
-		 
+	 public boolean enableFreight(int warehouseID) {
 		 Warehouse theWarehouse = warehouses.get(warehouseID);
-
-		 boolean enabled = (theWarehouse != null);
-		 
-		 if (enabled) {theWarehouse.enableFreight();}
-			
-		 return enabled;
+		 if (theWarehouse != null) {
+			 theWarehouse.enableFreight();
+			 return true;
+		}
+		return false;
 	 }
-	 
-
+	
 	 /**
 	  * Disables freight receipt in a warehouse
 	  * @param warehouseID warehouse id
 	  * @return true if freight was successfully
 	  *         disabled, false if not.
 	  */
-	
 	public boolean endFreight(int warehouseID) {
 		Warehouse theWarehouse = warehouses.get(warehouseID);
-
-		boolean disabled = (theWarehouse != null);
-		if (disabled) {theWarehouse.disableFreight();}
-		
-		return disabled;
+		if (theWarehouse != null) {
+			theWarehouse.disableFreight();
+			return true;
+		}
+		return false;
 	}
-	
+
 	/**
 	 * Checks if we have an empty collection of warehouses.
 	 * @return true if empty, false if not.
 	 */
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return warehouses.size() == 0;
 	}
-	
-	
+
 	/**
 	 * Getter for shipments size for a specified warehouse
 	 * @return the size of the warehouse, -1 if
 	 * 		   warehouse doesn't exist
 	 */
-	public int getWarehouseShipmentsSize(int warehouseID)
-	{
+	public int getWarehouseShipmentsSize(int warehouseID) {
 		Warehouse theWarehouse = warehouses.get(warehouseID);
 		return (theWarehouse != null ? theWarehouse.getShipmentSize() : -1);
-		
 	}
-	
-	
-	
+
 	/**
 	 * Exports a warehouse object to JSON file
 	 * @param warehouseID warehouse id
 	 * @param destPath path to write file to
 	 * @return true if warehouse exists, false if not
 	 */
-	public boolean exportWarehouseToJSON (int warehouseID) // What if the warehouse is empty?
-	{
-		
+	public boolean exportWarehouseToJSON (int warehouseID) {
 		Warehouse theWarehouse = warehouses.get(warehouseID);
-		
 		boolean exists = (theWarehouse != null);
-		
-		if (exists){ theWarehouse.exportToJSON(); }
-		
+		if (exists) {
+			theWarehouse.exportToJSON();
+		}
 		return exists;
+	}
+	
+	/**
+	 * Checks if a warehouse exists
+	 * @param warehouseID warehouse id
+	 * @return true if it does, false if not.
+	 */
+	public boolean warehouseExists (int warehouseID) {
+		return (warehouses.get(warehouseID) != null);
 	}
 	
 	/**
 	 * Prints information about a warehouse for user to see.
 	 * @param warehouseID the warehouse id number.
 	 */
-	public void printWarehouseDetails(int warehouseID) 
-	{
+	public void printWarehouseDetails(int warehouseID) {
 		Warehouse theWarehouse = warehouses.get(warehouseID);
 		
-		if (theWarehouse == null) 
-		{
-			System.out.println("Warehouse with ID: " + warehouseID + " doesn't exist");
-		}else 
-		{
+		try {
 			System.out.println(theWarehouse.toString());
+		} catch (NullPointerException e) {
+			throw new IllegalArgumentException("** Warehouse with ID " + warehouseID + " does not exist");
 		}
-
 	}
 	
-	
-	
-
+	public void printAll() {
+		
+		warehouses.forEach((k, v) -> printWarehouseDetails(k));
+	}
 }

@@ -15,7 +15,7 @@ import com.generic.model.Shipment;
 
 /**
  * A Junit class for unit testing
- * @author Seyi Ola
+ * @author GENERIC TEAM
  *
  */
 
@@ -29,10 +29,7 @@ public class QATester {
 	Shipment shipment2;
 	Shipment shipment3;
 	Shipment shipment4;
-	
-	
-	 
-	
+
 	public QATester() {
 		//Singleton pattern for WarehouseController Class
 		wTracker = WarehouseTracker.getInstance();
@@ -40,24 +37,35 @@ public class QATester {
 	
 		// first warehouse and shipment
 		wTracker.addWarehouse(new Warehouse(12513));
-		wTracker.addShipment(12513, new Shipment("48934j", FreightType.valueOf("AIR"), 84, 1515354694451L));
+
+		Shipment shipment = new Shipment.Builder()
+				.id("48934j")
+				.type(FreightType.AIR)
+				.weight(84)
+				.date(1515354694451L)
+				.build();
+		wTracker.addShipment(12513, shipment);
 		
 		
 		// second valid warehouse and shipment
 		wTracker.addWarehouse(new Warehouse(15566));
 		
 		//Initialize a bunch of shipment objects
-		shipment1 = new Shipment("123tr", FreightType.valueOf("RAIL"), 74.0, 1515354694451L);
-		shipment2 = new Shipment("4231e", FreightType.valueOf("SHIP"), 88.0, 1515254694451L);
-		
-		
-		// TURNS OUT A JUNIT TEST CALLS A THE CONSTRUCTOR EVERYTIME A
-		// NEW TEST METHOD IS EXECUTED - LEARNING SOMETHING NEW
+		shipment1 = new Shipment.Builder()
+				.id("123tr")
+				.type(FreightType.RAIL)
+				.weight(74.0D)
+				.date(1515354694451L)
+				.build();
+
+		shipment2 = new Shipment.Builder()
+				.id("4231e")
+				.type(FreightType.SHIP)
+				.weight(88.0D)
+				.date(1515354694451L)
+				.build();
 	}
-	
-	
-	
-	
+
 	/**
 	 * Test that there are no 
 	 * warehouses with duplicate ID numbers constructed.
@@ -67,6 +75,14 @@ public class QATester {
 	@ValueSource(ints = {12513, 15566})
 	void testDuplicateWarehouse(int warehouseID)
 	{
+		// Arrange
+		WarehouseTracker wTracker = WarehouseTracker.getInstance();
+		Warehouse warehouse = new Warehouse(12513);
+
+		// Act
+		wTracker.addWarehouse(warehouse);
+		
+		// Assert
 		assertFalse(wTracker.addWarehouse(new Warehouse(warehouseID)));
 	}
 	
