@@ -157,10 +157,4 @@ public class QATester {
 	{
 		assertEquals(0, wTracker.getWarehouseShipmentsSize(15566));
 	}
-
-
-	
-	
-	
-
 }

@@ -3,6 +3,7 @@ package com.generic.main;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,6 +17,10 @@ import com.generic.tracker.WarehouseTracker;
 
 /**
  * Entry Point
+ * 
+ * To import run the command:
+ * import example.json
+ * 
  * @author GENERIC TEAM
  *
  */
@@ -25,19 +30,70 @@ public class Main {
 	
 	public Main() {
 		warehouseTracker = WarehouseTracker.getInstance();
+		
+		// TODO: use map for commands <command, function>
+		System.out.println("Available Commands:");
+		System.out.println("import <file>");
+		System.out.println("export <file>");
+		System.out.println("warehouse add -- TODO");
+		System.out.println("warehouse delete -- TODO");
+		System.out.println("warehouse enable -- TODO");
+		System.out.println("shipment add -- TODO");
+		System.out.println("shipment assign <warehouse> -- TODO");
+		System.out.println("print");
+		System.out.println("exit");
 	}
 
 	public static void main(String[] args) {
 		Main app = new Main();
-		try {
-			// parse the json file
-			app.parseJson(new File("resource/example.json").getAbsolutePath());
-		} catch(IOException | ParseException e) {
-			System.out.println("System can not read the file!");
-			System.exit(0);
+		Scanner in = new Scanner(System.in);
+		
+		loop:
+		while(true) {
+			System.out.print("> ");
+			if (!in.hasNextLine())
+				break;
+				
+			String[] arg = in.nextLine().split(" ");
+			String command = arg[0];
+			switch(command.toLowerCase()) {
+				case "import":
+					String file = arg[1];
+					try {
+						System.out.println("Importing "+file+"...");
+						app.parseJson(new File("resource/"+file).getAbsolutePath());
+						System.out.println("Importing complete!");
+					} catch (IOException | ParseException e) {
+						System.out.println("System can not read the file!");
+					}
+					break;
+				case "export":
+					// TODO: specify the file name
+					warehouseTracker.exportWarehouseToJSON(15566);
+					break;
+				case "shipment":
+					switch(arg[1]) {
+						case "add":
+							// calls a to take input from user and "builds" a new shipment
+							System.out.println("Working in progress...");
+							break;
+						case "assign":
+							// parse arg[2] into int (the warehouse ID)
+							System.out.println("Working in progress...");
+							break;
+					}
+					break;
+				case "print":
+					warehouseTracker.printAll();
+					break;
+				case "exit":
+					break loop;
+				default:
+					System.out.println("** Invalid Command!");
+					continue;
+			}
 		}
-		// export warehouse data to json
-		warehouseTracker.exportWarehouseToJSON(15566);
+		System.out.println("Goodbye!");
 	}
 
 	/**
@@ -63,30 +119,20 @@ public class Main {
 	 * @param shipmentObject shipment object in json
 	 */
 	private void parseWarehouseContentsToObjects(JSONObject shipmentObject) {
-		// get the warehouse ID
 		String warehouseString = (String)shipmentObject.get("warehouse_id");
 		int warehouseID = Integer.parseInt(warehouseString);
-
-		String shipmentID = (String) shipmentObject.get("shipment_id");
-		FreightType freight = FreightType.valueOf((String)shipmentObject.get("shipment_method").toString().toUpperCase());
-		Number weight = (Number) shipmentObject.get("weight");
-		Number receiptDate = (Number) shipmentObject.get("receipt_date");
-
-		// add the warehouse
-		warehouseTracker.addWarehouse(new Warehouse(warehouseID));
-		
+		// create warehouse
+		Warehouse warehouse = new Warehouse(warehouseID);
 		// build a shipment
 		Shipment shipment = new Shipment.Builder()
-				.id(shipmentID)
-				.type(freight)
-				.weight(weight.doubleValue())
-				.date(receiptDate.longValue())
+				.id((String) shipmentObject.get("shipment_id"))
+				.type(FreightType.valueOf((String)shipmentObject.get("shipment_method").toString().toUpperCase()))
+				.weight(((Number) shipmentObject.get("weight")).doubleValue())
+				.date(((Number) (Number) shipmentObject.get("receipt_date")).longValue())
 				.build();
-				
+		// add the warehouse
+		warehouseTracker.addWarehouse(warehouse);
 		// add the shipment to the warehouse
 		warehouseTracker.addShipment(warehouseID, shipment);
-		
-		// print the contents of the warehouse
-		warehouseTracker.printWarehouseDetails(warehouseID);		
 	}
 }

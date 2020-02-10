@@ -18,11 +18,11 @@ import com.generic.model.Warehouse;
  * @author GENERIC TEAM
  *
  */
-public class WarehouseTracker {
+public final class WarehouseTracker {
 	private static WarehouseTracker warehouseTracker;
 	
 	// Stores a collection of warehouses mapped by their id 
-	private static Map<Integer, Warehouse> warehouses;
+	private Map<Integer, Warehouse> warehouses;
 
 	// private constructor
 	private WarehouseTracker() {}
@@ -60,6 +60,10 @@ public class WarehouseTracker {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean addShipment(Warehouse theWarehouse, Shipment mShipment) {
+		return addShipment(theWarehouse.getWarehouseID(), mShipment);
 	}
 	
 	/**
@@ -119,11 +123,11 @@ public class WarehouseTracker {
 	 */
 	public boolean exportWarehouseToJSON (int warehouseID) {
 		Warehouse theWarehouse = warehouses.get(warehouseID);
-		boolean exists = (theWarehouse != null);
-		if (exists) {
+		if (theWarehouse != null) {
 			theWarehouse.exportToJSON();
+			return true;
 		}
-		return exists;
+		return false;
 	}
 	
 	/**
@@ -132,9 +136,14 @@ public class WarehouseTracker {
 	 */
 	public void printWarehouseDetails(int warehouseID) {
 		Warehouse theWarehouse = warehouses.get(warehouseID);
-		if (theWarehouse == null) 
+		if (theWarehouse == null) {
+			System.out.println("Warehouse cannot be found!");
 			return; // TODO: throw exception
-		else 
-			System.out.println(theWarehouse.toString());
+		}
+		System.out.println(theWarehouse.toString());
+	}
+	
+	public void printAll() {
+		warehouses.forEach((k, v) -> printWarehouseDetails(k));
 	}
 }
