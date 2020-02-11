@@ -6,7 +6,6 @@ import java.util.Date;
 import org.json.simple.JSONObject;
 
 /**
- * @author Justin Caughlan, Seyi Ola
  * @author GENERIC TEAM
  * This models a Shipment
  */
@@ -64,6 +63,9 @@ public class Shipment {
 	public String toString() {
 		return String.format(SHIPMENT_DETAIl_FORMAT_STRING, shipmentID, weight, freight.toString().toLowerCase(), milliToDate(receiptDate));
 	}
+	
+	
+	
 	
 	@SuppressWarnings("unchecked")
 	public JSONObject toJSON() {

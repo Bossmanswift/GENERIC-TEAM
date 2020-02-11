@@ -96,6 +96,9 @@ public final class WarehouseTracker {
 		}
 		return false;
 	}
+	
+	
+	
 
 	/**
 	 * Checks if we have an empty collection of warehouses.
@@ -105,6 +108,7 @@ public final class WarehouseTracker {
 		return warehouses.size() == 0;
 	}
 
+	
 	/**
 	 * Getter for shipments size for a specified warehouse
 	 * @return the size of the warehouse, -1 if
@@ -129,6 +133,17 @@ public final class WarehouseTracker {
 		}
 		return false;
 	}
+	
+	/**
+	 * Checks if a warehouse exists
+	 * @param warehouseID warehouse id
+	 * @return true if it does, false if not.
+	 */
+	public boolean warehouseExists (int warehouseID) {
+		return (warehouses.get(warehouseID) != null);
+	}
+	
+	
 	
 	/**
 	 * Prints information about a warehouse for user to see.

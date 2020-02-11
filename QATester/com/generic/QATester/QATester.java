@@ -15,7 +15,7 @@ import com.generic.model.Shipment;
 
 /**
  * A Junit class for unit testing
- * @author Seyi Ola
+ * @author GENERIC TEAM
  *
  */
 

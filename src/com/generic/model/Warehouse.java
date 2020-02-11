@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 /**
  * This class creates a model of a Warehouse.
  * 
- * @author Justin Caughlan, Seyi Ola
  * @author GENERIC TEAM
  */
 
@@ -103,11 +102,11 @@ public class Warehouse {
 			for (Shipment shipment : shipments) {
 				String shipmentInfo = shipment.toString();
 				warehouseInfo.append(count++).append(".").append(shipmentInfo).append("\n");
+				warehouseInfo.append("****************************************").append("\n");
 			}
 		} else {
 			warehouseInfo.append("        *NO SHIPMENTS RECEIVED YET*").append("\n");
 		}
-		warehouseInfo.append("****************************************");
 		return warehouseInfo.toString();
 	}
 	
