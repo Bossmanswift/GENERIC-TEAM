@@ -198,12 +198,12 @@ public class Main {
 			// TODO: Validate input for freight type
 			System.out.print("Enter shipment_method(i.e air, truck, ship, rail) -> ");
 			
-			ArrayList<String> shipmentMethodList = new ArrayList<String>(Arrays.asList(new String [] {FreightType.AIR.toString()
-																									, FreightType.RAIL.toString()
-																									, FreightType.TRUCK.toString()
-																									, FreightType.SHIP.toString()}));
+//			ArrayList<String> shipmentMethodList = new ArrayList<String>(Arrays.asList(new String [] {FreightType.AIR.toString()
+//																									, FreightType.RAIL.toString()
+//																									, FreightType.TRUCK.toString()
+//																									, FreightType.SHIP.toString()}));
 			shipmentString = sc.next().toUpperCase();
-			while(!shipmentMethodList.contains(shipmentString))
+			while(!FreightType.getFreightFromString(shipmentString))
 			{
 				System.out.print("Please enter a valid shipment_method(i.e air, truck, ship, rail) -> ");
 				shipmentString = sc.next().toUpperCase();

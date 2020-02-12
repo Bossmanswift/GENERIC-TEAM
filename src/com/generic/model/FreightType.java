@@ -8,10 +8,16 @@ package com.generic.model;
 public enum FreightType {
 	AIR, TRUCK, SHIP, RAIL;
 	
-	public static FreightType getFreightFromString(String str) {
-		//TODO: Return the value of the String str if it exists.
-		// if it doesn't exist, throw an IllegalArgumentException
-		return AIR;
+	public static boolean getFreightFromString(String str) {
+		FreightType fType = FreightType.valueOf(str);
+		
+		boolean exists = true;
+		 
+		 if (fType == null) {
+			 exists = false;
+		 }
+		
+		return exists;
 	}
 
 }
