@@ -37,6 +37,9 @@ public final class WarehouseTracker {
 		return warehouseTracker;
 	}
 	
+	
+	//TODO: Create a method that checks if a particular warehouse has it's freight enabled
+	
 	/**
 	 * 
 	 * Adds a new warehouse to the warehouse collection.

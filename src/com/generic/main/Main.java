@@ -126,6 +126,8 @@ public class Main {
 					warehouseID2 = Integer.parseInt(arg[1]);
 					if (!warehouseTracker.isEmpty()) {
 						warehouseTracker.endFreight(warehouseID2);
+						System.out.println("** Freight ended for warehouse #" + warehouseID2);
+
 					} else {
 						System.out.println("** No warehouses avaliable, please import data first");
 					}
@@ -145,7 +147,7 @@ public class Main {
 							boolean added = app.addShipmentOp(mWarehouseID , in);
 							if (!added) {
 								System.out.println("** Shipment could not be added because"
-										+ " freight has ended for this warehouse");
+										         + " freight has ended for this warehouse");
 							}
 						}
 					} else {
@@ -278,10 +280,11 @@ public class Main {
 		// create warehouse
 		Warehouse warehouse = new Warehouse(warehouseID);
 		// build a shipment
-		Shipment shipment = new Shipment.Builder().id((String) shipmentObject.get("shipment_id"))
+		Shipment shipment = new Shipment.Builder()
+				.id((String) shipmentObject.get("shipment_id"))
 				.type(FreightType.valueOf((String) shipmentObject.get("shipment_method").toString().toUpperCase()))
 				.weight(((Number) shipmentObject.get("weight")).doubleValue())
-				.date(((Number) (Number) shipmentObject.get("receipt_date")).longValue()).build();
+				.date(((Number)shipmentObject.get("receipt_date")).longValue()).build();
 		// add the warehouse
 		warehouseTracker.addWarehouse(warehouse);
 		// add the shipment to the warehouse
