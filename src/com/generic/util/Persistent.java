@@ -1,12 +1,14 @@
 package com.generic.util;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.w3c.dom.*;
+
+import javax.xml.parsers.*;
 
 import com.generic.model.FreightType;
 import com.generic.model.Shipment;
@@ -57,5 +59,40 @@ public class Persistent {
 		// add the shipment to the warehouse
 		warehouseTracker.addShipment(warehouseID, shipment);
 	}
-
+	
+	public void parseXML(String filepath) throws IOException, ParseException {
+		File inputFile = new File(filepath);
+		WarehouseTracker warehouseTracker = WarehouseTracker.getInstance();
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(inputFile);
+		doc.getDocumentElement().normalize();
+		NodeList nList = doc.getElementsByTagName("Warehouse");
+		for (int i = 0; i < nList.getLength(); i++) {
+			Node nNode = nList.item(i);
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element eWarehouseElement = (Element) nNode;
+				String warehouseID = eWarehouseElement.getAttribute("id");
+				Warehouse warehouse = new Warehouse(warehouseID);
+				warehouseTracker.addWarehouse(warehouse);
+				if (eWarehouseElement.hasChildNodes()) {
+					NodeList nChildList = eWarehouseElement.getChildNodes();
+					for (int j = 0; j < nChildList.getLength(); j++) {
+						Node nNode2 = nChildList.item(j);
+						if (nNode2.getNodeType() == Node.ELEMENT_NODE) {
+							Element eShipmentElement = (Element) nNode2;
+							Shipment shipment = new Shipment.Builder()
+									.id(eShipmentElement.getAttribute("id"))
+									.type(FreightType.valueOf(eShipmentElement.getAttribute("type")))
+									.weight(Double.parseDouble(eShipmentElement.getElementsByTagName("Weight").item(0).getTextContent()))
+									.date(Long.parseLong(eShipmentElement.getElementsByTagName("ReceiptDate").item(0).getTextContent()))
+									.build();
+							warehouseTracker.addShipment(warehouseID, shipment);
+						}
+						
+					}
+				}
+			}
+		}
+	}
 }
